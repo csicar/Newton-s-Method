@@ -15,7 +15,11 @@ function Newton(F, f, x0){
     },
   }
 }
-function fade(i){
+
+
+
+function fade(i, that){
+  if(!that.doFade) return 1;
   return 1-0.2*i
 }
 
@@ -29,14 +33,17 @@ var NV = function(){
   var i = 0;
   mathbox.curve({
     id: 'F',
-    domain: [-10, 10],
+    domain: [-5, 5],
     color: 0xcc0000,
+    n: 200,
   })
   this.Funktion = 'sin(x)';
   this.Ableitung = 'cos(x)';
-  this.x0 = 1.141;
+  this.x_0 = "1.141";
+  this.doFade = true;
   this.run = function(){
     i = 0;
+    this.x0 = math.eval(this.x_0);
     mathbox.remove('#line');
     mathbox.remove('#dot');
     mathbox.remove('#tangent');
@@ -53,7 +60,7 @@ var NV = function(){
       duration: 500,
     })
     this.v = Newton(this.F, this.f, this.x0);
-
+    this.next();
 
   };
   this.next = function(){
@@ -81,7 +88,8 @@ var NV = function(){
       id: 'tangent',
       expression: v.Tangent(x),
       color: 0x669900,
-      opacity: fade(i),
+      opacity: fade(i, this),
+      n: 2,
     })
     //Punkt
     .curve({
@@ -92,7 +100,7 @@ var NV = function(){
       points: true,
       color: 0x33B5E5,
       line: false,
-      opacity: fade(i),
+      opacity: fade(i, this),
     })
     //Linie
     .vector({
@@ -100,7 +108,8 @@ var NV = function(){
       id: 'line',
       color: 0x33B5E5,
       data: [[x, 0], [x, F(x, 0)]],
-      opacity: fade(i),
+      opacity: fade(i, this),
+      size: 0.03,
     })
     i += 1;
   };

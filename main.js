@@ -48,9 +48,10 @@ function make(){
   var gui = new dat.GUI();
   gui.add(nv, 'Funktion');
   gui.add(nv, 'Ableitung');
-  gui.add(nv, 'x0', -10, 10);
+  gui.add(nv, 'x_0');
   gui.add(nv, 'run');
   gui.add(nv, 'next');
+  gui.add(nv, 'doFade');
   nv.run();
 }
 
