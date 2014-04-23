@@ -37,9 +37,9 @@ var NV = function(){
     color: 0xcc0000,
     n: 200,
   })
-  this.Funktion = 'sin(x)';
-  this.Ableitung = 'cos(x)';
-  this.x_0 = "1.141";
+  this.Funktion = 'e^(0.9*x)-x^(2)-2';
+  this.Ableitung = '0.9*e^(0.9*x)-2*x';
+  this.x_0 = "1";
   this.doFade = true;
   this.run = function(){
     i = 0;
@@ -81,6 +81,7 @@ var NV = function(){
     rep.enter().append('p').html(function(d, i){
       return '<span class="i">'+i+'</span>'+'<span class="d">'+d+'</span>'
     });
+    document.querySelector('#data').scrollTop = 10000000;
     rep.exit().remove();
 
     mathbox.curve({
