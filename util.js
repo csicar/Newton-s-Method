@@ -25,7 +25,7 @@ function Newton(F, f, x0){
     },
     getCorrectDigits: function(str){
       result||this.result();
-      var res = result+'';
+      var res = numeral(result).format('0.00000000000000000000');
       var i = 0;
       while(str[i] == res[i] && str[i]){
         i++
