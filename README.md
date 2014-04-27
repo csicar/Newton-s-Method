@@ -26,6 +26,9 @@ Since the Newton's Method can be konvergent, divergent or oszilerating there are
 
 `f(x) = sin(x)` `x_0 = 1.2`
 
+###No Point
+`x^3-2*x+2` `x_0 = 1.5`
+
 ###Other Interesting
 
 `f(x) = 0.5*x^3+0.5*x` `x_0=2`

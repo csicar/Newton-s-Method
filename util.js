@@ -1,5 +1,6 @@
 function Newton(F, f, x0){
   var x = [x0];
+  var result = null;
   return {
     x: x,
     next: function(){
@@ -13,10 +14,30 @@ function Newton(F, f, x0){
         return (f(u, 0)*(x-u)+F(u, 0));
       }
     },
+    result: function(){
+      if(result) return result;
+      var nv = Newton(F, f, x0);
+      for(var i = 0; i<100; i++){
+        nv.next();
+      }
+      result = nv.x[nv.x.length-1]
+      return result;
+    },
+    getCorrectDigits: function(str){
+      result||this.result();
+      var res = result+'';
+      var i = 0;
+      while(str[i] == res[i] && str[i]){
+        i++
+      };
+      console.log(i)
+      return {
+        correct: res.substr(0, i),
+        incorrect: str.substr(i),
+      }
+    },
   }
 }
-
-
 
 function fade(i, that){
   if(!that.doFade) return 1;
@@ -27,8 +48,13 @@ function fade(i, that){
 function clone(val){
 return val
 }
-window.math = mathjs();
-
+window.math = mathjs()
+math.import({
+  ln: function(x){
+    return math.eval('log(x)/log(e)', {x:x});
+  }
+})
+nerdamer.setFunction('ln', ['x'], 'log(x)/log(e)');
 var NV = function(){
   var i = 0;
   mathbox.curve({
@@ -37,10 +63,24 @@ var NV = function(){
     color: 0xcc0000,
     n: 200,
   })
+  var self = this;
   this.Funktion = 'e^(0.9*x)-x^(2)-2';
-  this.Ableitung = '0.9*e^(0.9*x)-2*x';
+  this.Ableitung = nerdamer('diff('+this.Funktion+', x)').text();
   this.x_0 = "1";
   this.doFade = true;
+  this.autoTangent = true;
+  this.showCorrect = true;
+  this.zoom = function(val){
+    mathbox.camera({
+      orbit: val,
+    })
+  }
+  this.move = function(cx, cy){
+    console.log(cx, cy)
+    mathbox.camera({
+      lookAt: [cx, cy, 0],
+    })
+  }
   this.run = function(){
     i = 0;
     this.x0 = math.eval(this.x_0);
@@ -50,8 +90,8 @@ var NV = function(){
     d3.select('#data').selectAll('p').remove();
     var self = this;
 
-    this.F =  math.eval("F(x, i)="+self.Funktion);
-    this.f = math.eval('f(x, i)='+self.Ableitung);
+    this.F =  math.eval("F(x, i)=re("+self.Funktion+')');
+    this.f = math.eval('f(x, i)='+nerdamer('diff('+self.Funktion+', x)').text());
     mathbox.animate('#F', {
       domain: [-10, 10],
       expression: this.F,
@@ -60,11 +100,11 @@ var NV = function(){
       duration: 500,
     })
     this.v = Newton(this.F, this.f, this.x0);
-    this.next();
-
+    this.autoTangent&&this.next();
   };
   this.next = function(){
     var v = this.v
+    var self = this;
     var x_0 = clone(this.x0);
 
     var F = this.F
@@ -79,7 +119,16 @@ var NV = function(){
     //Tangente
     var rep = d3.select('#data').selectAll('p').data(this.v.x)
     rep.enter().append('p').html(function(d, i){
-      return '<span class="i">'+i+'</span>'+'<span class="d">'+d+'</span>'
+      var content;
+      var c;
+      if(self.showCorrect){
+        c = v.getCorrectDigits(d+'');
+        content = '<span class="corr">'+c.correct+'</span>'+
+                  '<span class="incorr">'+c.incorrect+'</span>'
+      }else{
+        content = d;
+      }
+      return '<span class="i">'+i+'</span>'+'<span class="d">'+content+'</span>'
     });
     document.querySelector('#data').scrollTop = 10000000;
     rep.exit().remove();
@@ -110,7 +159,7 @@ var NV = function(){
       color: 0x33B5E5,
       data: [[x, 0], [x, F(x, 0)]],
       opacity: fade(i, this),
-      size: 0.03,
+      size: 0.01,
     })
     i += 1;
   };
