@@ -44,6 +44,15 @@ function fade(i, that){
   return 1-0.2*i
 }
 
+function getParam(variable){
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
 
 function clone(val){
 return val
@@ -64,12 +73,13 @@ var NV = function(){
     n: 200,
   })
   var self = this;
-  this.Funktion = 'e^(0.9*x)-x^(2)-2';
+  console.log(getParam('funktion'))
+  this.Funktion = getParam('funktion') || 'e^(0.9*x)-x^(2)-2';
   this.Ableitung = nerdamer('diff('+this.Funktion+', x)').text();
-  this.x_0 = "1";
-  this.doFade = true;
-  this.autoTangent = true;
-  this.showCorrect = true;
+  this.x_0 = getParam('x0') || "1";
+  this.doFade = JSON.parse(getParam('doFade')) || true;
+  this.autoTangent = JSON.parse(getParam('autoTangent')) || true;
+  this.showCorrect = JSON.parse(getParam('showCorrect')) || true;
   this.zoom = function(val){
     mathbox.camera({
       orbit: val,
@@ -81,6 +91,34 @@ var NV = function(){
       lookAt: [cx, cy, 0],
     })
   }
+  this.share = function(){
+    console.log("i", i)
+    window.location.search = '?'+
+    'funktion='+this.Funktion+
+    '&x0='+this.x_0+
+    '&doFade='+this.doFade+
+    '&autoTangent='+this.autoTangent+
+    '&showCorrect='+this.showCorrect+
+    '&steps='+i;
+  }
+  this.draw = function(){
+    mathbox.remove('curve');
+    mathbox.remove('vector')
+    mathbox.curve({
+      n: self.v.x.length,
+      id: 'con',
+      data: self.v.x,
+      domain: [0, self.v.x.length],
+      point: true,
+      color: 0x3361CC,
+    })
+    mathbox.curve({
+      domain: [0, self.v.x.length],
+      expression: function(x){ return self.v.result()},
+      color: 0xDC3912,
+    })
+  }
+  window.draw = this.draw;
   this.run = function(){
     i = 0;
     this.x0 = math.eval(this.x_0);
@@ -163,4 +201,14 @@ var NV = function(){
     })
     i += 1;
   };
+  (function(max){
+    self.run();
+    for(var i = 0; i < max; i++){
+      console.log(10000000, i)
+      self.next();
+    }
+  }(Number(getParam('steps'))))
+  window.Reihe = function(){
+    return self.v.x;
+  }
 };

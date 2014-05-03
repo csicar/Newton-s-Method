@@ -57,6 +57,8 @@ function make(){
   look.add(nv, 'doFade');
   look.add(nv, 'autoTangent');
   look.add(nv, 'showCorrect');
+  look.add(nv, 'share');
+  look.add(nv, 'draw');
 
   var dragCtrl = (function(){
     var x0;
@@ -88,13 +90,11 @@ function make(){
       .on('dragstart', dragCtrl.dragstart)
   )
 
-
-
   /*var cx = look.add(nv, 'cx', -10, 10);
   cx.onChange(nv.move);
   var cy = look.add(nv, 'cy', -10, 10);
   cy.onChange(nv.move);*/
-  nv.run();
+  //nv.run();
 }
 
 DomReady.ready(function() {
