@@ -16,6 +16,8 @@ Since the Newton's Method can be konvergent, divergent or oszilerating there are
 
 ###Divergent
 
+[http://csicar.github.io/Newton-s-Method/?funktion=(x^3+2*x+1)/(x+1)^4&x0=0&doFade=true&autoTangent=true&showCorrect=false&steps=15]((x^3+2*x+1)/(x+1)^4)
+
 `f(x) = e^x` `x_0=1.1`
 
 ###Oszilatation
